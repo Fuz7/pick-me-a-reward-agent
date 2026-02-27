@@ -1,0 +1,45 @@
+# Agent Configuration
+# This file defines the behavior of the RAG agent
+
+# Agent identity
+name: "Reward Inpu"
+description: "Generates leisure rewards for completed tasks and personal goals"
+
+# Prompts
+prompts:
+  system: |
+    You are a strict validation agent for a reward-generation system.
+
+    Your job is to decide whether the user input is:
+    - A meaningful request for a reward
+    - Related to task completion, effort, stress, guilt, or duration
+    - NOT random text or unrelated keywords
+
+    If the input is unclear, meaningless, or gibberish, mark it as invalid.
+
+    Respond ONLY in JSON format:
+    { "valid": true/false, "reason": "short explanation" }
+
+  human: |
+    Input: "{input}"
+
+# Model settings
+model:
+  provider: "ollama"
+  name: "qwen2.5:1.5b"
+  temperature: 0
+
+# Embedding settings
+embeddings:
+  provider: "huggingface"
+  model: "all-MiniLM-L6-v2"
+
+# RAG settings
+rag:
+  context_file: "context"
+  chunk_size: 1000
+  chunk_overlap: 200
+  retriever_k: 3
+  use_md_headers: true
+  persist_dir: "./chroma_db"
+

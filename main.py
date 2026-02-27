@@ -27,11 +27,22 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
-def main(config_path: str = "agent.yaml"):
+def main(config_path: str = "agent.yaml", validator_config_path: str = "validator.yaml"):
     """Main execution function."""
     # Load configuration from YAML
     config = AgentConfig.from_yaml(config_path)
 
+    validator = None
+    if validator_config_path:
+        validator_config = AgentConfig.from_yaml(validator_config_path)
+        validator_llm = LLMFactory.create_from_agent_config(validator_config)
+
+        validator = RAGAgent(
+            config=validator_config,
+            repository=None,
+            llm_provider=validator_llm,
+        )
+    
     logger.info(f"Starting agent: {config.name}")
     logger.info(f"Using model: {config.model_provider}/{config.model_name}")
 
@@ -79,8 +90,29 @@ def main(config_path: str = "agent.yaml"):
         print(f"{config.description}")
         print("=" * 80 + "\n")
 
-        results = agent.run_test_cases()
+        results = []
 
+        for test_input in config.test_cases:
+            # Run validator first (if exists)
+            if validator:
+                validation_result = validator.run(test_input)
+
+                if not validation_result.is_success:
+                    results.append(validation_result)
+                    continue
+
+                # Expect JSON like: {"valid": true, "reason": "..."}
+                validation_output = validation_result.output.lower()
+
+                if "false" in validation_output:
+                    results.append(
+                        validation_result
+                    )
+                    continue
+
+            # If valid → run reward agent
+            result = agent.run(test_input)
+            results.append(result)
         for i, result in enumerate(results, 1):
             print(f"\n{'─' * 80}")
             print(f"Test Case {i}:")
@@ -111,6 +143,11 @@ if __name__ == "__main__":
         default="agent.yaml",
         help="Path to agent configuration file (default: agent.yaml)",
     )
+    parser.add_argument(
+    "--validator-config",
+    "-v",
+    default="validator.yaml",
+    help="Validator system config file"
+    )
     args = parser.parse_args()
-
-    main(args.config)
+    main(args.config, args.validator_config)

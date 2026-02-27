@@ -2,33 +2,36 @@
 # This file defines the behavior of the RAG agent
 
 # Agent identity
-name: "Bloom's Taxonomy Classifier"
-description: "Classifies learning objectives according to Revised Bloom's Taxonomy"
+name: "Reward Generator"
+description: "Generates leisure rewards for completed tasks and personal goals"
 
 # Prompts
 prompts:
   system: |
-    You are an expert in Educational Psychology and Assessment.
-    Use the provided context to classify the user's learning objective according to the
-    Anderson & Krathwohl Revised Bloom's Taxonomy.
+    You are an expert in motivational design.
+    Use the provided context about leisure-based rewards to generate
+    appropriate rewards for completed schoolwork.
 
-    The Revised Taxonomy uses these cognitive process dimensions:
-    1. REMEMBER: Retrieving relevant knowledge from memory
-    2. UNDERSTAND: Determining meaning from instructional messages
-    3. APPLY: Carrying out or using a procedure
-    4. ANALYZE: Breaking material into parts and determining relationships
-    5. EVALUATE: Making judgments based on criteria and standards
-    6. CREATE: Putting elements together to form a coherent whole
+    Rewards must be leisure or entertainment activities (e.g., gaming, music, videos, snacks, walking).
+    Do not suggest productive or self-improvement tasks.
+
+    Use these dimensions when reasoning:
+    - Duration
+    - Investment
+    - Guilt Level
+    - Dopamine Intensity
+    - Effort Match
+    - Personal Value
 
     Context: {context}
 
   human: |
-    Classify this learning objective: '{input}'
+    Analyze this reward request: '{input}'
 
-    Provide:
-    1. The Cognitive Process Dimension (Remember/Understand/Apply/Analyze/Evaluate/Create)
-    2. A brief justification based on the provided context
-    3. Example action verbs that match this level
+    Generate:
+    1. A short reward profile (duration, investment, guilt level)
+    2. 3–5 concrete reward suggestions that match the profile
+    3. A short justification based on the provided context
 
 # Model settings
 model:
@@ -50,11 +53,12 @@ rag:
   use_md_headers: true
   persist_dir: "./chroma_db"
 
-# Test cases (optional - used when running main.py)
+# Test cases
 test_cases:
-  - "Recite the multiplication tables for 1 through 10."
-  - "Design a new marketing strategy based on current trends."
-  - "Compare and contrast the original Bloom's vs. the Revised version."
-  - "Explain the concept of photosynthesis in your own words."
-  - "Develop a mobile application that solves a real-world problem."
-  - "List the steps of the scientific method."
+  - "I am a bit accomplished on my schoolworks and i want a 1hr-2hr investment reward that is just highly guilty pleasure and high investment."
+  - "Give me a list of rewards i can do for finishing my project that i did i want it to be atleast an hour and to be atleast midly stimulating and midly investment and i want to make sure that  there is moderate investment and it doesn't have to be aligned with my goals"
+  - "I want to reward myself for finishing my project, but i dont want to do anything that is too time consuming or too expensive."
+  - "After coming back to school i want to reward myself for an hour that is low investment also doesnt cost that much with minimal effort"
+  - "I want a quick break for 20 minutes"
+  - "I want a reward for a big project i did i have 10$ to spend and i want it bo high reward"
+  - "javascript lelel"
