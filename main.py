@@ -13,6 +13,7 @@ import argparse
 import logging
 
 from src.agent import AgentConfig, RAGAgent
+from src.agent.validator import VALIDATORAGENT 
 from src.loaders import DocumentLoaderFactory
 from src.chunkers import ChunkerFactory
 from src.repositories import ChromaRepository
@@ -37,9 +38,8 @@ def main(config_path: str = "agent.yaml", validator_config_path: str = "validato
         validator_config = AgentConfig.from_yaml(validator_config_path)
         validator_llm = LLMFactory.create_from_agent_config(validator_config)
 
-        validator = RAGAgent(
+        validator = VALIDATORAGENT(
             config=validator_config,
-            repository=None,
             llm_provider=validator_llm,
         )
     
@@ -97,22 +97,16 @@ def main(config_path: str = "agent.yaml", validator_config_path: str = "validato
             if validator:
                 validation_result = validator.run(test_input)
 
-                if not validation_result.is_success:
+                if validation_result.output == True:
+                    result = agent.run(test_input)
+                    results.append(result)
+                    continue
+                else:
                     results.append(validation_result)
                     continue
-
-                # Expect JSON like: {"valid": true, "reason": "..."}
-                validation_output = validation_result.output.lower()
-
-                if "false" in validation_output:
-                    results.append(
-                        validation_result
-                    )
-                    continue
+        
 
             # If valid → run reward agent
-            result = agent.run(test_input)
-            results.append(result)
         for i, result in enumerate(results, 1):
             print(f"\n{'─' * 80}")
             print(f"Test Case {i}:")
