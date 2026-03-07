@@ -2,9 +2,9 @@
 
 import logging
 
-from langchain_huggingface import HuggingFaceEmbeddings
-from langchain_core.embeddings import Embeddings
 
+from langchain_core.embeddings import Embeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from src.embeddings.base import EmbeddingProvider
 
 logger = logging.getLogger(__name__)
