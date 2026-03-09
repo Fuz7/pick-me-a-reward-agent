@@ -7,12 +7,6 @@ from llm import load_rag_agent
 from langchain_core.output_parsers import JsonOutputParser
 import re
 
-try:
-    client = groq.Groq(api_key=st.secrets["GROQ_API_KEY"])
-    st.write("✅ Groq connected")
-except Exception as e:
-    st.error(f"❌ Groq failed: {e}")
-
 llm = load_rag_agent("agent.yaml")
 parser = JsonOutputParser()
 
