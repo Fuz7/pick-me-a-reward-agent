@@ -48,25 +48,19 @@ prompts:
 
     Context: {context}
 
-    Return the result in JSON format:
-
+    Return the result in this format:
     {{
       "valid": true,
-      "reward_profile": {{
-        "duration": "",
-        "investment": "",
-        "guilt_level": ""
-      }},
       "rewards": [
         "reward 1",
         "reward 2",
         "reward 3",
         "reward 4",
         "reward 5",
-        "upto 7 rewards total"
+        "upto 8 rewards total"
       ],
       
-      The 6th and 7th reward could be things i am not really sure i like but is something novel that i might like and is something that is not really aligned with my goals but is something that i might like to try
+      The 6th,7th and 8th reward could be things i am not really sure i like but is something novel that i might like and is something that is not really aligned with my goals but is something that i might like to try
       "justification": "Explain why these rewards match the request and context."
     }}
 

@@ -3,9 +3,14 @@ from streamlit_chatbox import *
 import time
 import simplejson as json
 import uuid  # for unique keys
+from llm import load_rag_agent
+from langchain_core.output_parsers import JsonOutputParser
+import re
 
 
-llm = FakeLLM()
+llm = load_rag_agent("agent.yaml")
+parser = JsonOutputParser()
+
 chat_box = ChatBox(
     use_rich_markdown=True, # use streamlit-markdown
     user_theme="green", # see streamlit_markdown.st_markdown for all available themes
@@ -99,7 +104,7 @@ button[data-testid="stChatInputSubmitButton"]:not(:disabled) {
 if query := st.chat_input('input your question here'):
     chat_box.user_say(query)
     if streaming:
-        generator = llm.chat_stream(query)
+        generator = llm.run(query)
         elements = chat_box.ai_say(
             [
                 # you can use string for Markdown output if no other parameters provided
@@ -122,41 +127,44 @@ if query := st.chat_input('input your question here'):
                                 on_submit=on_feedback,
                                 kwargs={"chat_history_id": chat_history_id, "history_index": len(chat_box.history) - 1})
     else:
-        text, docs = llm.chat(query)
+        agent_response = llm.run(query)
+
+        # Extract JSON block
+        json_match = re.search(r"\{[\s\S]*\}", agent_response.output)
+
+        if json_match:
+            json_text = json_match.group()
+            parsed_output = parser.parse(json_text)
+        else:
+            raise ValueError("No JSON found in LLM output")
+
+        if not parsed_output["valid"]:
+            message = f"❌ **Invalid Request**\n\n{parsed_output['reason']}"
+            theme_color = "red"
+            state = "error"
+
+        else:
+            rewards = parsed_output["rewards"]
+
+            # Format nicely for markdown
+            message = "✅ **Rewards Generated**\n\n" + "\n\n".join([f"🎁 {r}" for r in rewards])
+            theme_color = "green"
+            state = "complete"
+
+
         chat_box.ai_say(
             [
-                Markdown(text, in_expander=in_expander,
-                         expanded=True, title="answer"),
-                Markdown("\n\n".join(docs), in_expander=in_expander,
-                         title="references"),
+                Markdown(
+                    message,
+                    in_expander=in_expander,
+                    expanded=True,
+                    title="answer",
+                    state=state,
+                    use_rich_markdown=True,
+                    theme_color=theme_color,
+                ),
             ]
         )
-
-
-cols = st.columns(1)
-
-if cols[0].button('run agent'):
-    chat_box.user_say('run agent')
-    agent = FakeAgent()
-    text = ""
-
-    # streaming:
-    chat_box.ai_say() # generate a blank placeholder to render messages
-    for d in agent.run_stream():
-        if d["type"] == "complete":
-            chat_box.update_msg(expanded=False, state="complete")
-            chat_box.insert_msg(d["llm_output"])
-            break
-
-        if d["status"] == 1:
-            chat_box.update_msg(expanded=False, state="complete")
-            text = ""
-            chat_box.insert_msg(Markdown(text, title=d["text"], in_expander=True, expanded=True))
-        elif d["status"] == 2:
-            text += d["llm_output"]
-            chat_box.update_msg(text, streaming=True)
-        else:
-            chat_box.update_msg(text, streaming=False)
 
 
 
