@@ -7,9 +7,11 @@ from src.llm.ollama_provider import OllamaProvider
 from src.llm.groq_provider import GroqProvider
 from src.config.settings import settings
 import streamlit as st
+import logging
 if TYPE_CHECKING:
     from src.agent.config_loader import AgentConfig
 
+logger = logging.getLogger(__name__)
 
 class LLMFactory:
     """Factory for creating LLM providers."""
@@ -37,6 +39,8 @@ class LLMFactory:
         if provider == "ollama":
             return OllamaProvider(model=model_name, temperature=temperature)
         elif provider == "groq":        
+            key = st.secrets.get("GROQ_API_KEY")
+            logger.info(f"API key loaded: {'YES' if key else 'NO - key is None!'}")
             return GroqProvider(model=model_name, temperature=temperature,
                                 api_key=st.secrets.get("GROQ_API_KEY")) 
         raise ValueError(f"Unsupported LLM provider: {provider}")
