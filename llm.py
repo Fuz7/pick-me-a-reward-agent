@@ -15,7 +15,7 @@ from src.chunkers import ChunkerFactory
 from src.repositories import ChromaRepository
 from src.embeddings import EmbeddingFactory
 from src.llm import LLMFactory
-
+import os
 logger = logging.getLogger(__name__)
 
 
@@ -33,7 +33,7 @@ def load_rag_agent(config_path: str = "agent.yaml") -> RAGAgent:
 
     # Load configuration
     config = AgentConfig.from_yaml(config_path)
-
+    os.environ["GROQ_API_KEY"] = st.secrets.get("GROQ_API_KEY", "")  #
     logger.info(f"Loading agent: {config.name}")
 
     # Create embeddings

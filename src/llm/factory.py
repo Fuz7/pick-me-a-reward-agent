@@ -6,12 +6,11 @@ from src.llm.base import LLMProvider
 from src.llm.ollama_provider import OllamaProvider
 from src.llm.groq_provider import GroqProvider
 from src.config.settings import settings
+
 import streamlit as st
-import logging
 if TYPE_CHECKING:
     from src.agent.config_loader import AgentConfig
 
-logger = logging.getLogger(__name__)
 
 class LLMFactory:
     """Factory for creating LLM providers."""
