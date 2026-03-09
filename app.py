@@ -1,5 +1,6 @@
 import groq, streamlit as st
 from streamlit_chatbox import *
+
 import time
 import simplejson as json
 import uuid  # for unique keys
@@ -11,7 +12,7 @@ llm = load_rag_agent("agent.yaml")
 parser = JsonOutputParser()
 
 chat_box = ChatBox(
-    use_rich_markdown=True, # use streamlit-markdown
+    use_rich_markdown=False, # use streamlit-markdown
     user_theme="green", # see streamlit_markdown.st_markdown for all available themes
     assistant_theme="blue",
     
@@ -159,7 +160,7 @@ if query := st.chat_input('input your question here'):
                     expanded=True,
                     title="answer",
                     state=state,
-                    use_rich_markdown=True,
+                    use_rich_markdown=False,
                     theme_color=theme_color,
                 ),
             ]
