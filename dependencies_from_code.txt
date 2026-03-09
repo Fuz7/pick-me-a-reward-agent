@@ -1,0 +1,15 @@
+streamlit
+streamlit-chatbox
+simplejson
+langchain-core
+langchain
+PyYAML
+langchain-classic
+langchain-text-splitters
+langchain-community
+python-dotenv
+langchain-groq
+pydantic
+typing-extensions
+transformers
+huggingface_hub
