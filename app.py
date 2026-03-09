@@ -1,4 +1,4 @@
-import streamlit as st
+import groq, streamlit as st
 from streamlit_chatbox import *
 import time
 import simplejson as json
@@ -7,6 +7,11 @@ from llm import load_rag_agent
 from langchain_core.output_parsers import JsonOutputParser
 import re
 
+try:
+    client = groq.Groq(api_key=st.secrets["GROQ_API_KEY"])
+    st.write("✅ Groq connected")
+except Exception as e:
+    st.error(f"❌ Groq failed: {e}")
 
 llm = load_rag_agent("agent.yaml")
 parser = JsonOutputParser()
@@ -131,7 +136,7 @@ if query := st.chat_input('input your question here'):
 
         # Extract JSON block
         json_match = re.search(r"\{[\s\S]*\}", agent_response.output)
-
+        
         if json_match:
             json_text = json_match.group()
             parsed_output = parser.parse(json_text)
