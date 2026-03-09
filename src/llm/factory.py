@@ -36,8 +36,10 @@ class LLMFactory:
         """
         if provider == "ollama":
             return OllamaProvider(model=model_name, temperature=temperature)
-        elif provider == "groq":                                                  # add this
-            return GroqProvider(model=model_name, temperature=temperature,api_key=settings.GROQ_API_KEY) 
+        elif provider == "groq":        
+            print("GROQ API KEY:", settings.GROQ_API_KEY)  # Debug print to check if the API key is being read correctly                                     # add this
+            return GroqProvider(model=model_name, temperature=temperature,
+                                api_key=settings.GROQ_API_KEY) 
         raise ValueError(f"Unsupported LLM provider: {provider}")
 
     @staticmethod
