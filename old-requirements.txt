@@ -1,0 +1,26 @@
+# Core LangChain packages
+langchain==0.3.13
+langchain-core==0.3.28
+langchain-community==0.3.13
+
+# LangChain integrations
+langchain-huggingface==0.1.2
+langchain-text-splitters==0.3.4
+
+# Vector store and embeddings
+chromadb==0.5.23
+sentence-transformers==3.3.1
+
+# Document processing (PDF + Markdown)
+pypdf==5.1.0
+unstructured==0.16.9
+markdown==3.7
+
+# Required dependencies
+httpx==0.28.1
+pydantic==2.10.3
+pydantic-core==2.27.1
+pyyaml==6.0.2
+
+# Optional: Progress bars
+tqdm==4.67
